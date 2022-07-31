@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let x = [12, 23];
+      function fn(y) {
+        y[0] = 100;
+        y = 100;
+        y[1] = 200;
+        console.log(y);
+      }
+      fn(x);
+      console.log(x);
+      /**
+       * 对象数据类型的操作
+       * @1 在堆内存中分配一块空间[具备16进制地址]
+       * @2 存储相关的内容
+       *   + 函数对象存储三部分
+       *     1. 创建函数的时候声明了其作用域[[scope]],函数在那个上下文中创建的，那其作用域就是谁
+       *     2. 把函数体中的代码当做字符串存储起来
+       *     3. 把函数当做普通对象存储一些键值对
+       *   + 其余对象只是存储键值对而已
+       * @3 把创建的内存地址赋值给对应的变量或者函数，方便后期访问操作
+       * */
+
+      /**
+       * 函数执行
+       * @1 创建一个全新的私有执行上下文[进栈]，函数中的代码都是在这个私有上下文中执行
+       *   + 私有变量对象AO(Active Object)，它是VO的分支，在私有上下文中声明的变量都存储在这里
+       * @2 完成很多要执行的步骤：
+       *   + 初始化作用域链<自己私有上下文，函数作用域>
+       *   + 初始化this [箭头函数没有这一步]
+       *   + 初始化arguments [箭头函数没有这一步]
+       *   + 形参赋值
+       *   + 变量提升
+       * @3 代码执行
+       * @4 出栈释放或者保留
+       * */
+    </script>
+  </body>
+</html>

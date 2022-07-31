@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       * 0.1+0.2 !== 0.3
+       * @1 所有值在计算机底层都是按照二进制存储的，运算也是基于二进制
+       *   整数运算一般不会出问题
+       *   小数运算一般会出现问题
+       * @2 浮点数转为二进制会出现无限循环的情况，计算机底层存储的时候，按照可以识别的最长位数存储，其余的的直接干掉... 所以浮点数存储的二进制值本身就失去了精准度
+       *  所以浮点数运算的结果也是缺乏精准度的，而且小数最后面的0都会省略，但凡不是0，都不会省略
+       *  运算保证精准度实现思路：把小数变为整数(乘以系数)运算，运算后的结果在除以系数
+       * */
+      // 十进制转换为二进制
+      // 整数：除2取余，一直到商为0，最后倒着拼接余数 [10进制value].toString(2)
+      console.log((23).toString(2));
+
+      // 小数：乘以2，取整，一直到结果是1为止， 取整部分拼接
+      // 0.1 * 2 = 0.2  0
+      // 0.2 * 2 = 0.4  0
+      // 0.4 * 2 = 0.8  0
+      // 0.8 * 2 = 1.6  1 剩下 0.6
+      // 0.6 * 2 = 1.2  1 剩下 0.2
+      // 0.2 * 2 = 0.4  0
+      // ...
+      // 没有可能会存在结果为1
+
+      /**
+       * 返回计算系数
+       */
+      const coefficient = function coefficient(num) {
+        if (typeof num !== "number") {
+          throw Error("请传入数字类型");
+        }
+        num = String(num);
+        let [, char = ""] = num.split(".");
+        let len = char.length;
+        return Math.pow(10, len);
+      };
+      const plus = function plus(n, m) {
+        n = +n;
+        m = +m;
+        if (isNaN(m) || isNaN(n)) return NaN;
+        let coeffic = Math.max(coefficient(m), coefficient(n));
+        return (n * coeffic + m * coeffic) / coeffic;
+      };
+
+      /**
+       * 数据类型转换
+       * @1 对象类型转换数字类型规则：
+       *  + 先调用对象的 Symbol.toPrimitive 这个方法，如果不存在这个方法
+       *  + 在调用对象的 valueof 方法获取原始值，如果获取的值不是原始值
+       *  + 在调用对象的 toString 方法把其变为字符串
+       *  + 最后再把字符串基于 Number 方法转换为数字
+       *
+       * @2 parseInt([value], [radix]) parseFloat([value])
+       *  + 一般用于手动转换
+       *  + 规则：[value] 值必须是一个字符串，如果不是则先转换为字符串; 然后从字符窜左侧第一个字符开始找，
+       *    把找到的有效数字字符最后转换为数字[一个都没找到就是NaN]; 遇到一个非有效数字字符，不论后面是否还有
+       *    有效数字字符，都不再查找了；parseFloat 可以多识别一个小数点；
+       *
+       * */
+      // exe1：
+      Number([10]); // 10
+      Number([10, 20]); // NaN
+      // [10, 20].valueOf() - [10, 20]
+      // [10, 20].toString() - '10, 20'
+      // Number('10, 20') - NaN
+
+      // exe2:
+      let obj = { 0: 10, length: 1 };
+      Number(obj); // NaN
+      // obj[Symbol.toPrimitive] -> undefined
+      // obj.valueOf() -> 非原始值
+      // obj.toString() -> "[object Object]"
+      // => NaN
+
+      // exe:3
+      const num = new Number(10);
+      Number(num); // 10
+      // num[Symbol.toPrimitive] -> undefined
+      // num.valueOf() -> 10
+      // => 10
+
+      const time = new Date();
+      console.dir(time);
+      Number(time); // 1658541755199
+      // time[Symbol.toPrimitive] -> 执行 time[Symbol.toPrimitive]()
+
+      // exe:4
+    </script>
+  </body>
+</html>

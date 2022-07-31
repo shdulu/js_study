@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let a = [10, 20];
+      let sym = Symbol("AA");
+      let obj = {
+        name: "shdulu",
+        age: 10,
+        0: 100,
+        [{ xx: "xx" }]: 200,
+        [a]: 300,
+        [Symbol("BB")]: 400,
+        [sym]: 500,
+      };
+      console.log(obj);
+
+      //1. for in 循环 - 无法迭代Symbol类型的私有属性
+      for (const key in obj) {
+        console.log(key);
+        // 0 name age [object Object] 10,20
+      }
+      // 2. 获取非symbol类型的私有属性
+      let keys = Object.keys(obj);
+      console.log(`Object.keys:`, keys);
+
+      // 3. 获取symbol类型的私有属性
+      let symbolKeys = Object.getOwnPropertySymbols(obj);
+      console.log(`SymbolKeys`, symbolKeys);
+
+      // 4. 获取所有私有属性不论啥类型
+      let allKeys = Reflect.ownKeys(obj);
+      console.log(`Reflect.ownKeys`, allKeys);
+
+      // 作用2：把Symbol作为对象， 提供的很多静态属性方法，是JS很多的知识的底层原理实现
+      // Symbol.toPrimitive/hasInstance/toStringTag/iterator/asyncIterator...
+      // 作用3：vuex/redux中我们需要派发很多行为标识，我们可以把这些行为标识统一管理，为了保证行为标识的唯一性，所以可以基于symbol处理
+      // ...
+
+      // 5. bigint 大数
+      // Number.MAX_SAFE_INTEGER  // 最大安全数字，超过这个数字进行运算，运算结果不一定准确
+      // 需求：服务器端数据存储值有longInt(大数类型)，如果服务器返回这样的值(一般会以字符串形式返回)，而且
+      // 需要客户端在这个值基础上再次运算,我们该如何处理?
+      // 把服务器获取的值[value]先转换为bigInt类型 BigInt([value]) -> BV  数字后加n
+      // 基于BV进行运算(运算的另外一个值也是bigint类型)
+      // 把运算的结果转换为字符串(去掉n)再传递给服务器即可
+      // 例子：
+      const bigint = BigInt("9007199254740991") + BigInt("10");
+      const bigint1 = BigInt("9007199254740991") + 10n;
+      console.log(bigint, bigint1);
+
+      /***
+       * 数据类型检测的方式
+       * 1. typeof [value] - 返回值是字符串，字符串中包含所属值类型
+          - typeof null -> 'object'
+          - typeof 检测对象类型，除函数被识别为'function',其余都是'object'[不能细分对象]
+          ---
+          了解为啥会这样？
+            @1 JS中创建的所有类型值，在计算机底层都是按照'二进制'形式进行存储
+            @2 typeof 检测也是根据二进制值进行检测，其中就是一条规则：
+               如果是以'000'开始的二进制，则被识别为对象(null存储的二进制值都是0，符合以000开始);然后再去看对象是否实现了[[call]],
+               实现了则为函数(返回'function')，没实现就是对象(返回'object')
+            因为是按照二进制进行检测，所有检测速度比较快的。
+          ---
+          - 基于typeof 检测一个未被声明的变量，不会报错，结果是 'undefined'
+
+       * 2. Object.prototype.toString.call([value])
+       * 3. [value] instanceof [Constructor]
+       * 4. [value].constructor
+       * ----
+       * 5. Array.isArray([value])
+       * 6. isNaN([value])
+       * ...
+      */
+
+      // 检测是否为对象
+      if (
+        val !== null &&
+        (typeof val === "object" || typeof val === "function")
+      ) {
+      }
+      if (val !== null && /^(object | function)$/i.test(typeof val)) {
+      }
+
+      (function () {
+        let utils = {
+          sayHello() {
+            alert("hello");
+          },
+        };
+        if (typeof window !== undefined) window.utils = utils;
+        if (typeof module === "object" && typeof module.exports === "object")
+          module.exports = utils;
+      })();
+    </script>
+  </body>
+</html>
