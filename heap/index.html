@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="but">点击</button>
+  </body>
+  <script>
+    var rows = []
+    function Person(name) {
+        this.name = '我是第' + name + '個'
+    }
+    function getColumns () {
+        var arr = new Array(10000).fill('0')
+        arr.forEach((col, index) => {
+            arr[index] = new Person(index)
+        })
+        return arr
+    }
+    document.getElementById('but').addEventListener('click', function() {
+        rows.push(getColumns())
+    })
+  </script>
+</html>
